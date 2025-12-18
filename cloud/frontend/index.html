@@ -10,7 +10,7 @@
 
     body {
       font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #001f3f;
       margin: 0;
       padding: 0;
       display: flex;
@@ -61,8 +61,33 @@
     }
 
     .card:hover {
-      transform: translateY(-5px);
       box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+
+    .stats-container {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      background: #003366;
+      flex: 1;
+      padding: 18px;
+      border-radius: 14px;
+      color: #fff;
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .stat-card p {
+      font-size: 2rem;
+      margin: 10px 0 0 0;
+      font-weight: bold;
     }
 
     @keyframes fadeIn {
@@ -115,11 +140,11 @@
     }
 
     .status-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #001f3f;
     }
 
     .wordcount-btn {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      background: #2c5f7f;
     }
 
     .status-btn:hover {
@@ -130,10 +155,6 @@
     .wordcount-btn:hover {
       transform: scale(1.05);
       box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
-    }
-
-    button:active {
-      transform: scale(0.98);
     }
 
     .output-box, pre {
@@ -161,7 +182,7 @@
     }
 
     th {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #001f3f;
       color: white;
       font-weight: 600;
       text-transform: uppercase;
@@ -176,55 +197,50 @@
     tr:hover {
       background-color: #f5f5f5;
     }
-
-    .emoji {
-      font-size: 2.5rem;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 5px 12px;
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      color: white;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-left: 10px;
-    }
   </style>
 </head>
 <body>
 
 <div class="container">
   <div class="header">
-    <h1><span class="emoji">🚀</span> Hadoop WordCount <span class="badge">LIVE</span></h1>
+    <h1>Hadoop WordCount</h1>
     <p>Distributed Big Data Processing Made Easy</p>
   </div>
 
   <div class="card">
-    <h2>📊 Cluster Status</h2>
-    <button class="status-btn" onclick="checkStatus()">🔍 Check Cluster Health</button>
+    <h2>Cluster Status</h2>
+    <button class="status-btn" onclick="checkStatus()">Check Cluster Health</button>
     <pre id="status"></pre>
   </div>
 
   <div class="card">
-    <h2>✨ Run WordCount Job</h2>
+    <h2>Run WordCount Job</h2>
     <textarea id="text" placeholder="Enter your text here to analyze word frequencies..."></textarea>
-    <button class="wordcount-btn" onclick="runWordCount()">🚀 Run MapReduce Job</button>
+    <button class="wordcount-btn" onclick="runWordCount()">Run MapReduce Job</button>
+
+    <!-- 👉 Added two stat cards here -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <h3>Total Words</h3>
+        <p id="total-words">0</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>Unique Words</h3>
+        <p id="unique-words">0</p>
+      </div>
+    </div>
   </div>
 
   <div class="card">
-    <h2>📈 WordCount Results</h2>
-    <div class="output-box">
-      <pre id="output">Results will appear here...</pre>
-    </div>
+    <h2>WordCount Results</h2>
     <div id="table"></div>
   </div>
 
 </div>
 
 <script>
-const BASE = "https://collections-baking-reducing-craps.trycloudflare.com";
+const BASE = "https://belt-tourism-mixed-mating.trycloudflare.com";
 
 async function checkStatus() {
   const el = document.getElementById("status");
@@ -242,8 +258,7 @@ async function runWordCount() {
   const text = document.getElementById("text").value.trim();
   if (!text) return alert("Enter text first!");
 
-  document.getElementById("output").innerText = "⏳ Running Hadoop job...";
-  document.getElementById("table").innerHTML = "";
+  document.getElementById("table").innerHTML = "<p>Running Hadoop job...</p>";
 
   try {
     const res = await fetch(`${BASE}/api/wordcount`, {
@@ -253,13 +268,15 @@ async function runWordCount() {
     });
 
     const data = await res.json();
-    document.getElementById("output").innerText =
-      JSON.stringify(data, null, 2);
+
+    // Fill new stats
+    document.getElementById("total-words").innerText = data.total_words;
+    document.getElementById("unique-words").innerText = data.unique_words;
 
     buildTable(data.word_counts);
 
   } catch (e) {
-    document.getElementById("output").innerText = "❌ " + e;
+    document.getElementById("table").innerHTML = "<p>Error: " + e + "</p>";
   }
 }
 
